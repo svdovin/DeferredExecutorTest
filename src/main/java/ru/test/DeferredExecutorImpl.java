@@ -17,6 +17,11 @@ public class DeferredExecutorImpl<T> implements DeferredExecutor<T> {
     public DeferredExecutorImpl(Consumer<T> consumer, long delay) {
         timer = new Timer();
         this.delay = new AtomicLong(delay);
+        
+        
+        //svdovin: A thread-safe variant of ArrayList in which all mutative operations (add, set, and so on) 
+        //are implemented by making a fresh copy of the underlying array.
+        
         tasksList = new CopyOnWriteArrayList<>();
         this.consumer = consumer;
         this.delay.set(delay);
@@ -36,6 +41,7 @@ public class DeferredExecutorImpl<T> implements DeferredExecutor<T> {
     public void accept(T t) {
         ConsumerTimerTask task = new ConsumerTimerTask(t);
         tasksList.add(task);
+        //svdovin: что внутри schedule?
         timer.schedule(task, delay.get());
     }
 
